@@ -9,12 +9,15 @@ import {
   Share2,
 } from "lucide-react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 export default function SharePage() {
-  const params = useParams();
-  const id = params.id as string;
+const params = useParams();
+const searchParams = useSearchParams();
+
+const id = params.id as string;
+const senderToken = searchParams.get("token");
 
   const [copied, setCopied] = useState(false);
 
@@ -22,6 +25,11 @@ export default function SharePage() {
     typeof window !== "undefined"
       ? `${window.location.origin}/m/${id}`
       : "";
+
+      const inboxUrl =
+  typeof window !== "undefined" && senderToken
+    ? `${window.location.origin}/inbox/${senderToken}`
+    : "";
 
   const copyLink = async () => {
     try {
@@ -139,6 +147,36 @@ ${messageUrl}`;
               </>
             )}
           </button>
+<div className="mt-8 rounded-2xl border border-amber-400/20 bg-amber-400/[0.04] p-5 text-left">
+  <div className="flex items-start gap-3">
+    <Lock
+      size={18}
+      strokeWidth={1.3}
+      className="mt-0.5 text-amber-300"
+    />
+
+    <div>
+      <h3 className="text-sm text-amber-100">
+        Your private inbox
+      </h3>
+
+      <p className="mt-2 text-xs leading-relaxed text-zinc-500">
+        Save this link. It's the only place where you'll be able to
+        see anonymous replies to your message.
+      </p>
+
+      <button
+        onClick={async () => {
+          if (!inboxUrl) return;
+          await navigator.clipboard.writeText(inboxUrl);
+        }}
+        className="mt-4 text-xs text-amber-300 transition hover:text-amber-200"
+      >
+        Copy private inbox link →
+      </button>
+    </div>
+  </div>
+</div>
 
           <button
             onClick={shareWhatsApp}
