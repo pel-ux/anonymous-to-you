@@ -18,6 +18,7 @@ import {
   ArrowLeft,
   Eye,
   Heart,
+  Inbox,
   Lock,
   MessageCircle,
   Moon,
@@ -157,7 +158,8 @@ export default function InboxPage() {
 
   const shouldReduceMotion = useReducedMotion();
 
-  const token = params.senderToken as string;
+  const token = params.token as string;
+ const isValidToken = token && token.length > 0;
 
   const [messages, setMessages] = useState<InboxMessage[]>([]);
   const [replies, setReplies] = useState<Record<string, Reply[]>>({});
@@ -247,7 +249,9 @@ export default function InboxPage() {
 
       setMessages(unique);
       setLoading(false);
-      setNotFound(unique.length === 0);
+      // Empty messages do not mean the inbox is invalid.
+      // A valid inbox can simply have no messages yet.
+      setNotFound(false);
     };
 
     let senderMessages: InboxMessage[] = [];
